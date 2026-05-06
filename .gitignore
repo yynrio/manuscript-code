@@ -1,14 +1,33 @@
+# Output folders
 results/
-*.rds
+demo_results/
+rawdata_analysis/
+
+# R temporary files
+.Rhistory
+.RData
+.Rproj.user/
 *.RData
-*.bam
-*.bai
+*.rds
+*.RDS
+
+# macOS system files
+.DS_Store
+
+# Raw sequencing and alignment files
 *.fastq
 *.fq
 *.fastq.gz
 *.fq.gz
-rawdata_analysis/
-.DS_Store
-.Rhistory
-.RData
-.Rproj.user/
+*.sam
+*.bam
+*.bai
+
+# Large genome signal files
+*.bw
+*.bigWig
+*.bedGraph
+*.bedGraph.gz
+
+# Keep small demo bigWig files
+!demo_data/ATACseq_Fig4_SFig4_SFig5_demo/IGVgene_demo/bigwig_demo/*_demo.bw
