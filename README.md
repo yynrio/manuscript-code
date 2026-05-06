@@ -66,6 +66,27 @@ manuscript-code/
 ```
 
 ---
+# System requirements and installation
+
+## Hardware requirements
+
+No non-standard hardware is required. The demo workflows were tested on a standard Windows 11 laptop.
+
+Tested hardware:
+
+- CPU: Intel Core i5-10300H @ 2.50 GHz
+- RAM: 64 GB
+- Operating system: Windows 11, 64-bit
+
+## Installation time
+
+The scripts attempt to install missing CRAN and Bioconductor packages automatically.
+
+Typical installation time on a standard desktop computer: 20-60 minutes.
+
+Installation time may vary depending on the computer, internet connection and whether the required R/Bioconductor packages have already been installed.
+
+---
 
 # Bulk RNA-seq analysis for Fig. 4, Supplementary Fig. 4 and Supplementary Fig. 5
 
@@ -637,4 +658,6 @@ This section may include additional plotting scripts, integrative RNA-seq/ATAC-s
 
 # License
 
-This repository is currently provided for peer review and reproducibility purposes. A formal license will be added before public release.
+The analysis code in this repository is released under the MIT License. See the `LICENSE` file for details.
+
+The demo data are provided to test and reproduce the example workflows described in this repository.
