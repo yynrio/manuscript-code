@@ -1,0 +1,14 @@
+results/
+*.rds
+*.RData
+*.bam
+*.bai
+*.fastq
+*.fq
+*.fastq.gz
+*.fq.gz
+rawdata_analysis/
+.DS_Store
+.Rhistory
+.RData
+.Rproj.user/
