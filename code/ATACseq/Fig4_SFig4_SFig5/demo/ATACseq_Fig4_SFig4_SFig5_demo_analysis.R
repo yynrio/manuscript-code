@@ -115,21 +115,20 @@ options(download.file.method = "libcurl")
 ## 0.1. Input files
 ##############################
 
-work_dir <- "G:/GitHub/manuscript-code/demo_data/ATACseq_Fig4_SFig4_SFig5_demo"
-setwd(work_dir)
+demo_data_dir <- "demo_data/ATACseq_Fig4_SFig4_SFig5_demo"
 
 count_file <- file.path(
-  work_dir,
+  demo_data_dir,
   "peak_counts_samples_demo.txt"
 )
 
 metadata_file <- file.path(
-  work_dir,
+  demo_data_dir,
   "metadata_demo.csv"
 )
 
 bw_dir <- file.path(
-  work_dir,
+  demo_data_dir,
   "IGVgene_demo",
   "bigwig_demo"
 )
@@ -144,13 +143,13 @@ bw_files <- c(
 )
 
 igv_gene_file <- file.path(
-  work_dir,
+  demo_data_dir,
   "IGVgene_demo",
   "graph_Core_genes_list_with_transcript_id_demo.xlsx"
 )
 
 refseq_file <- file.path(
-  work_dir,
+  demo_data_dir,
   "IGVgene_demo",
   "ncbiRefSeqSelect_demo.txt.gz"
 )
@@ -159,7 +158,7 @@ refseq_file <- file.path(
 ## 1. Output directories
 ##############################
 
-result_dir <- "G:/GitHub/manuscript-code/results/ATACseq_Fig4_SFig4_SFig5_demo"
+result_dir <- "results/ATACseq_Fig4_SFig4_SFig5_demo"
 
 basic_dir   <- file.path(result_dir, "00_basic_data")
 qc_dir      <- file.path(result_dir, "00_QC")
@@ -193,7 +192,7 @@ for (d in c(
 }
 
 cat("Demo input directory:\n")
-cat(work_dir, "\n\n")
+cat(demo_data_dir, "\n\n")
 
 cat("Demo output directory:\n")
 cat(result_dir, "\n")
