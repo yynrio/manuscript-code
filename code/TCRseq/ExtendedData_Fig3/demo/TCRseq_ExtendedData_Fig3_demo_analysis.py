@@ -42,16 +42,21 @@ from scipy.interpolate import splrep, BSpline
 # whether the script is run from the repository root, VS Code, or Jupyter.
 SCRIPT_PATH = Path(__file__).resolve() if "__file__" in globals() else Path.cwd()
 
-REPO_ROOT = SCRIPT_PATH
+# Locate the repository root. This works both for a cloned repository named
+# "manuscript-code" and for GitHub ZIP downloads such as "manuscript-code-main".
+def find_repository_root(start_path):
+    current = Path(start_path).resolve()
+    if current.is_file():
+        current = current.parent
 
-if REPO_ROOT.is_file():
-    REPO_ROOT = REPO_ROOT.parent
+    while current.parent != current:
+        if (current / "README.md").exists() and (current / "code").is_dir() and (current / "demo_data").is_dir():
+            return current
+        current = current.parent
 
-while REPO_ROOT.name != "manuscript-code" and REPO_ROOT.parent != REPO_ROOT:
-    REPO_ROOT = REPO_ROOT.parent
+    raise RuntimeError("Cannot find repository root containing README.md, code, and demo_data.")
 
-if REPO_ROOT.name != "manuscript-code":
-    raise RuntimeError("Cannot find manuscript-code repository root.")
+REPO_ROOT = find_repository_root(SCRIPT_PATH)
 
 PATH_DATA_DIR = REPO_ROOT / "demo_data" / "TCRseq_ExtendedData_Fig3_demo"
 PATH_FIG_DIR = REPO_ROOT / "results" / "TCRseq_ExtendedData_Fig3_demo"
