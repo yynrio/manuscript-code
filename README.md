@@ -6,6 +6,7 @@ Currently included modules:
 
 - Bulk RNA-seq analysis for Fig. 4, Supplementary Fig. 4 and Supplementary Fig. 5
 - Bulk ATAC-seq analysis for Fig. 4, Supplementary Fig. 4 and Supplementary Fig. 5
+- TCR-seq analysis for Extended Data Fig. 3
 
 Additional analysis modules will be added later.
 
@@ -34,6 +35,17 @@ manuscript-code/
         demo/
           ATACseq_Fig4_SFig4_SFig5_demo_analysis.R
 
+    TCRseq/
+      ExtendedData_Fig3/
+        original/
+          TCRseq_ExtendedData_Fig3_original_analysis_GitHub.py
+          TCRseq_ExtendedData_Fig3_original_analysis_GitHub.ipynb
+
+        demo/
+          TCRseq_ExtendedData_Fig3_demo_analysis.py
+          TCRseq_ExtendedData_Fig3_demo_analysis.ipynb
+          requirements.txt
+
   demo_data/
     bulkRNAseq_Fig4_SFig4_SFig5_demo/
       gene_counts_demo.csv
@@ -57,15 +69,23 @@ manuscript-code/
           GSK-CD19-1_demo.bw
           PBMC-CD19-1_demo.bw
 
+    TCRseq_ExtendedData_Fig3_demo/
+      TCR_Clones_Collated_demo.xlsx
+      demo_data_summary.csv
+
   results/
     bulkRNAseq_Fig4_SFig4_SFig5_demo/
       Generated after running the bulk RNA-seq demo script
 
     ATACseq_Fig4_SFig4_SFig5_demo/
       Generated after running the ATAC-seq demo script
+
+    TCRseq_ExtendedData_Fig3_demo/
+      Generated after running the TCR-seq demo script
 ```
 
 ---
+
 # System requirements and installation
 
 ## Hardware requirements
@@ -74,17 +94,23 @@ No non-standard hardware is required. The demo workflows were tested on a standa
 
 Tested hardware:
 
-- CPU: Intel Core i5-10300H @ 2.50 GHz
-- RAM: 64 GB
-- Operating system: Windows 11, 64-bit
+```text
+CPU: Intel Core i5-10300H @ 2.50 GHz
+RAM: 64 GB
+Operating system: Windows 11, 64-bit
+```
 
 ## Installation time
 
-The scripts attempt to install missing CRAN and Bioconductor packages automatically.
+The R scripts attempt to install missing CRAN and Bioconductor packages automatically. The TCR-seq Python demo uses packages listed in its `requirements.txt` file and can be installed with `pip`.
 
-Typical installation time on a standard desktop computer: 20-60 minutes.
+Typical installation time on a standard desktop computer:
 
-Installation time may vary depending on the computer, internet connection and whether the required R/Bioconductor packages have already been installed.
+```text
+20-60 minutes
+```
+
+Installation time may vary depending on the computer, internet connection and whether the required R/Bioconductor or Python packages have already been installed.
 
 ---
 
@@ -588,6 +614,271 @@ This behavior is expected and does not indicate an error in the workflow.
 
 ---
 
+## TCR-seq analysis for Extended Data Fig. 3
+
+### Overview
+
+This module contains the TCR-seq analysis code used for Extended Data Fig. 3.
+
+The analysis focuses on TCR gene fragment usage, TCR repertoire diversity and V/J segment usage patterns across hPSC-derived T cells and reference thymic or peripheral T-cell populations.
+
+The repository provides two versions of the analysis script:
+
+```text
+code/TCRseq/ExtendedData_Fig3/original/
+  TCRseq_ExtendedData_Fig3_original_analysis_GitHub.py
+  TCRseq_ExtendedData_Fig3_original_analysis_GitHub.ipynb
+```
+
+These scripts are intended for the full original analysis using the complete TCR clone table.
+
+```text
+code/TCRseq/ExtendedData_Fig3/demo/
+  TCRseq_ExtendedData_Fig3_demo_analysis.py
+  TCRseq_ExtendedData_Fig3_demo_analysis.ipynb
+  requirements.txt
+```
+
+These scripts use the demo dataset provided in this repository and are intended to test whether the TCR-seq workflow can be executed successfully.
+
+The demo dataset is a reduced version of the processed TCR clone table. It is not expected to reproduce the exact quantitative results reported in the manuscript.
+
+---
+
+### Demo data
+
+The TCR-seq demo dataset is located in:
+
+```text
+demo_data/TCRseq_ExtendedData_Fig3_demo/
+```
+
+It contains the following files:
+
+```text
+TCR_Clones_Collated_demo.xlsx
+demo_data_summary.csv
+```
+
+The demo workbook has the same sheet names and column structure as the full analysis workbook, but each sheet contains a reduced number of rows for testing the workflow.
+
+The sheets used by the demo script are:
+
+```text
+PBMC Collated 2 filtered
+LD-SC40 Revision
+Fetal_w13_FCAImm
+Fetal_w14_FCAImm
+Fetal_thy_w17
+Postnatal_thy_10m
+Postnatal_30m_T06
+Adult_thy
+DMSO-T
+Inhibitor-T
+```
+The sheets PBMC Collated 2 filtered, LD-SC40 Revision, Fetal_w13_FCAImm, Fetal_w14_FCAImm, Fetal_thy_w17, Postnatal_thy_10m, Postnatal_30m_T06 and Adult_thy contain published reference TCR datasets used as in vivo-differentiated reference populations, including primary human thymocytes and PBMC CD8SP T cells. The primary thymocyte references were derived from Park et al. (Science, 2020), and the PBMC CD8SP T-cell reference was derived from Park et al. (Communications Biology, 2023).
+
+The sheets DMSO-T and Inhibitor-T contain the TCR-seq data generated in this study. DMSO-T corresponds to DMSO-treated hPSC-derived CD8 T cells, and Inhibitor-T corresponds to GSK761-treated hPSC-derived CD8 T cells.
+
+The demo data are provided only for testing the workflow and checking the expected input/output structure.
+
+Because the demo dataset is a subset of the complete dataset, TCR diversity metrics, segment usage profiles, PCA results and density plots may differ from the full manuscript analysis.
+
+---
+
+### Analysis included in the demo script
+
+The TCR-seq demo script performs the following analyses:
+
+1. Read the reduced TCR clone workbook
+2. Assign sample subsets and cell-type labels
+3. Remove records with missing paired CDR3α or CDR3β information
+4. Clean and standardize TCR V and J gene fragment names
+5. Calculate CDR3 amino-acid and nucleotide lengths for downstream repertoire summaries
+6. Calculate TCR diversity metrics, including Shannon entropy and Simpson diversity
+7. Compare DMSO and inhibitor-treated CD8 T-cell repertoires using a Mann-Whitney U test
+8. Summarize TCR V and J segment usage
+9. Perform PCA based on combined TRBV, TRBJ, TRAV and TRAJ usage
+10. Generate smoothed positional density plots for TCR segment usage
+11. Generate TCR V and J segment usage heatmaps
+12. Save Python and package version information
+
+Because the demo dataset is a reduced dataset, the output figures are intended to demonstrate code execution and workflow structure rather than reproduce the full manuscript figures exactly.
+
+---
+
+### How to run the TCR-seq demo
+
+The demo can be run either as a Python script or as a Jupyter notebook.
+
+#### Option 1: run the Python script
+
+Open a terminal and set the working directory to the repository root:
+
+```bash
+cd path/to/manuscript-code
+```
+
+Install the required Python packages:
+
+```bash
+pip install -r code/TCRseq/ExtendedData_Fig3/demo/requirements.txt
+```
+
+Then run:
+
+```bash
+python code/TCRseq/ExtendedData_Fig3/demo/TCRseq_ExtendedData_Fig3_demo_analysis.py
+```
+
+The demo results will be written to:
+
+```text
+results/TCRseq_ExtendedData_Fig3_demo/
+```
+
+#### Option 2: run the notebook
+
+Open the whole repository folder in VS Code or Jupyter, then open and run:
+
+```text
+code/TCRseq/ExtendedData_Fig3/demo/TCRseq_ExtendedData_Fig3_demo_analysis.ipynb
+```
+
+The notebook uses the same demo data and writes output files to the same results folder:
+
+```text
+results/TCRseq_ExtendedData_Fig3_demo/
+```
+
+---
+
+### Expected output files
+
+Expected output files include:
+
+```text
+software_versions.csv
+Fig.A - Simpson diversity.pdf
+Fig.C - Va Simple.pdf
+Fig.C - Vb Simple.pdf
+Fig.D - Ja Simple.pdf
+Fig.D - Jb Simple.pdf
+Fig.E - Position density.pdf
+Fig.F - PCA.pdf
+```
+
+The exact number and appearance of output figures may vary depending on the reduced demo data.
+
+---
+
+### Expected runtime
+
+The TCR-seq demo analysis was tested on a Windows 11 computer.
+
+The demo analysis takes approximately:
+
+```text
+1-5 minutes
+```
+
+Runtime may vary depending on the computer and whether the required Python packages have already been installed.
+
+---
+
+### Software requirements
+
+The workflow was developed and tested in Python.
+
+Tested environment:
+
+```text
+Python 3.13.12
+Operating system: Windows 11
+```
+
+Main Python packages directly used in the script:
+
+```text
+numpy
+pandas
+scipy
+matplotlib
+seaborn
+scikit-learn
+openpyxl
+ipython
+jupyter
+```
+
+In the tested environment, the following package versions were recorded:
+
+```text
+numpy 2.4.4
+pandas 3.0.2
+scipy 1.17.1
+matplotlib 3.10.9
+seaborn 0.13.2
+scikit-learn 1.8.0
+openpyxl 3.1.5
+ipython 9.13.0
+```
+
+The script saves the detected Python and package versions to:
+
+```text
+results/TCRseq_ExtendedData_Fig3_demo/software_versions.csv
+```
+
+---
+
+### Original full analysis script
+
+The original full TCR-seq analysis scripts are provided at:
+
+```text
+code/TCRseq/ExtendedData_Fig3/original/
+  TCRseq_ExtendedData_Fig3_original_analysis_GitHub.py
+  TCRseq_ExtendedData_Fig3_original_analysis_GitHub.ipynb
+```
+
+These scripts are intended for reproducing the full TCR gene fragment usage analysis using the complete TCR clone table.
+
+The original analysis requires the complete input workbook:
+
+```text
+TCR Clones Collated.xlsx
+```
+
+This full input workbook is not included in this repository.
+
+Before running the original analysis scripts, users should modify the input and output paths according to their local environment.
+
+---
+
+### Notes on reproducibility
+
+The TCR-seq demo analysis is designed to verify that the code can be executed and that the expected output structure is generated.
+
+Because the demo dataset is a reduced subset of the full dataset:
+
+- Simpson diversity values may differ from the full analysis.
+- TCR V and J segment usage heatmaps may differ from the full manuscript figures.
+- PCA patterns may be similar but not identical to the full analysis.
+- Positional density plots may differ from the full manuscript figures.
+
+This behavior is expected and does not indicate an error in the workflow.
+
+---
+
+## Additional analysis scripts
+
+To be added.
+
+This section may include additional plotting scripts, integrative RNA-seq/ATAC-seq analysis scripts, gene set scoring scripts or other supporting analyses associated with the manuscript.
+
+---
+
 # Planned additional modules
 
 The following sections are placeholders for additional analysis modules that will be added later.
@@ -634,30 +925,9 @@ demo_data/scRNAseq_demo_SFig1/
 
 ---
 
-## sc_TCR_seq analysis for SFig. 3
-
-To be added.
-
-Planned contents:
-
-```text
-code/sc_TCR_seq/SFig3/original/
-code/sc_TCR_seq/SFig3/demo/
-demo_data/sc_TCR_seq_SFig3_demo/
-```
-
----
-
-## Additional analysis scripts
-
-To be added.
-
-This section may include additional plotting scripts, integrative RNA-seq/ATAC-seq analysis scripts, gene set scoring scripts or other supporting analyses associated with the manuscript.
-
----
 
 # License
 
-The analysis code in this repository is released under the MIT License. See the `LICENSE` file for details.
+The analysis code in this repository is released under the MIT License. See the LICENSE file for details.
 
 The demo data are provided to test and reproduce the example workflows described in this repository.
