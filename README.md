@@ -6,6 +6,7 @@ Currently included modules:
 
 - Bulk RNA-seq analysis for Fig. 4, Supplementary Fig. 4 and Supplementary Fig. 5
 - Bulk ATAC-seq analysis for Fig. 4, Supplementary Fig. 4 and Supplementary Fig. 5
+- HSPC reference comparison analysis for Extended Data Fig. 1a,b
 - TCR-seq analysis for Extended Data Fig. 3
 
 Additional analysis modules will be added later.
@@ -34,6 +35,14 @@ manuscript-code/
 
         demo/
           ATACseq_Fig4_SFig4_SFig5_demo_analysis.R
+
+    HSPC_reference_comparison/
+      HSPC_reference_comparison_SFig1_a_b/
+        original/
+          HSPC_reference_comparison_ExtendedData_Fig1ab_full_original_analysis_github.R
+
+        demo/
+          HSPC_reference_comparison_SFig1_a_b_demo_analysis.R
 
     TCRseq/
       ExtendedData_Fig3/
@@ -69,6 +78,12 @@ manuscript-code/
           GSK-CD19-1_demo.bw
           PBMC-CD19-1_demo.bw
 
+    HSPC_reference_comparison_SFig1_a_b_demo/
+      HSPC_waves.txt
+      GSE253355_BM_HSPC_demo.rds
+      GSE162950_fetal_liver_demo.rds
+      Tera_integrate_Label_demo.rds
+
     TCRseq_ExtendedData_Fig3_demo/
       TCR_Clones_Collated_demo.xlsx
       demo_data_summary.csv
@@ -79,6 +94,9 @@ manuscript-code/
 
     ATACseq_Fig4_SFig4_SFig5_demo/
       Generated after running the ATAC-seq demo script
+
+    HSPC_reference_comparison_SFig1_a_b_demo/
+      Generated after running the HSPC reference comparison demo script
 
     TCRseq_ExtendedData_Fig3_demo/
       Generated after running the TCR-seq demo script
@@ -180,7 +198,7 @@ Because the demo dataset is a subset of the complete dataset, some differential 
 The demo script performs the following analyses:
 
 1. Read demo count matrix, metadata and gene annotation
-2. Generate basic QC summaries and mean ± SEM plots
+2. Generate basic QC summaries and mean +/- SEM plots
 3. Construct a DESeq2 object and perform VST normalization
 4. Generate six-group PCA plot
 5. Generate Pearson correlation heatmap based on the top 1000 highly variable genes
@@ -614,6 +632,267 @@ This behavior is expected and does not indicate an error in the workflow.
 
 ---
 
+# HSPC reference comparison analysis for Extended Data Fig. 1a,b
+
+## Overview
+
+This module contains the HSPC reference comparison analysis code used for Extended Data Fig. 1a,b.
+
+Our previous study established that transient inactivation of SP140 enables the generation of hematopoietic stem and progenitor cells (HSPCs) with robust serial transplantation capacity from hPSC-derived teratomas:
+
+```text
+Liu, X. et al. Transient SP140 inhibition unlocks hematopoietic stem cell fate from human pluripotent stem cells. Blood 147, 1584-1597 (2026).
+```
+
+In the current analysis, teratoma-derived HSPCs from this previous study were compared with fetal liver HSPC and adult bone marrow HSPC reference datasets. The comparative transcriptomic analysis showed that teratoma-derived HSPCs are transcriptionally more similar to adult bone marrow HSPCs than to fetal liver HSPCs.
+
+The fetal liver HSPC reference was derived from:
+
+```text
+Calvanese, V. et al. Mapping human haematopoietic stem cells from haemogenic endothelium to birth. Nature 604, 534-540 (2022).
+```
+
+The adult bone marrow HSPC reference was derived from:
+
+```text
+Bandyopadhyay, S. et al. Mapping the cellular biogeography of human bone marrow niches using single-cell transcriptomics and proteomic imaging. Cell 187, 3120-3140 e3129 (2024).
+```
+
+This analysis supports the rationale that SP140 inhibition during early differentiation may confer adult-like T-cell developmental potential to hPSCs.
+
+The repository provides two versions of the analysis script:
+
+```text
+code/HSPC_reference_comparison/HSPC_reference_comparison_SFig1_a_b/original/
+  HSPC_reference_comparison_ExtendedData_Fig1ab_full_original_analysis_github.R
+```
+
+This script is intended for the full original analysis using the complete Seurat objects for adult bone marrow HSPCs, fetal liver HSPCs and teratoma-derived HSPCs.
+
+```text
+code/HSPC_reference_comparison/HSPC_reference_comparison_SFig1_a_b/demo/
+  HSPC_reference_comparison_SFig1_a_b_demo_analysis.R
+```
+
+This script uses the downsampled demo Seurat objects provided in this repository and is intended to test whether the workflow can be executed successfully.
+
+The demo dataset is a representative reduced version of the full HSPC reference comparison dataset. It is not expected to reproduce the exact quantitative results reported in the manuscript.
+
+---
+
+## Demo data
+
+The HSPC reference comparison demo dataset is located in:
+
+```text
+demo_data/HSPC_reference_comparison_SFig1_a_b_demo/
+```
+
+It contains the following files:
+
+```text
+HSPC_waves.txt
+GSE253355_BM_HSPC_demo.rds
+GSE162950_fetal_liver_demo.rds
+Tera_integrate_Label_demo.rds
+```
+
+The demo data include downsampled Seurat objects for:
+
+```text
+Adult bone marrow HSPCs
+Fetal liver HSPCs
+Teratoma-derived HSPCs
+```
+
+The fetal liver HSPC groups correspond to the following developmental stages:
+
+```text
+FL-HSPC-1: Carnegie Stage 17
+FL-HSPC-2: week 8 of gestation
+FL-HSPC-3: week 11 of gestation
+FL-HSPC-4: week 15 of gestation
+```
+
+The adult bone marrow HSPC group is labelled as:
+
+```text
+BM-HSPC
+```
+
+The teratoma-derived HSPC group is labelled as:
+
+```text
+Teratoma-HSPC
+```
+
+The demo data are provided only for testing the workflow and checking the expected input/output structure.
+
+Because the demo dataset is a subset of the complete dataset, dot plot patterns and pseudo-bulk clustering results may differ from the full manuscript analysis.
+
+---
+
+## Analysis included in the demo script
+
+The HSPC reference comparison demo script performs the following analyses:
+
+1. Read HSPC wave gene list
+2. Read demo adult bone marrow HSPC Seurat object
+3. Read demo fetal liver HSPC Seurat object
+4. Read demo teratoma-derived HSPC Seurat object
+5. Assign HSPC reference group labels
+6. Generate HSPC wave gene dot plot
+7. Generate pseudo-bulk expression profiles
+8. Perform unsupervised hierarchical clustering
+9. Save R session information
+
+The demo workflow is designed to reproduce the input/output structure of the full analysis and to verify that the analysis code can be executed successfully.
+
+---
+
+## How to run the HSPC reference comparison demo
+
+Open R or RStudio and set the working directory to the repository root:
+
+```r
+setwd("path/to/manuscript-code")
+```
+
+Then run:
+
+```r
+source("code/HSPC_reference_comparison/HSPC_reference_comparison_SFig1_a_b/demo/HSPC_reference_comparison_SFig1_a_b_demo_analysis.R")
+```
+
+The demo results will be written to:
+
+```text
+results/HSPC_reference_comparison_SFig1_a_b_demo/
+```
+
+Expected output folders include:
+
+```text
+00_basic_data/
+01_ExtendedData_Fig1a_HSPC_waves_dotplot/
+02_ExtendedData_Fig1b_pseudobulk_hclust/
+sessionInfo.txt
+```
+
+Expected main output files include:
+
+```text
+01_ExtendedData_Fig1a_HSPC_waves_dotplot/
+  ExtendedData_Fig1a_HSPC_reference_comparison_HSPC_waves_DotPlot.pdf
+  ExtendedData_Fig1a_HSPC_reference_comparison_HSPC_waves_DotPlot.png
+
+02_ExtendedData_Fig1b_pseudobulk_hclust/
+  ExtendedData_Fig1b_HSPC_reference_comparison_pseudobulk_hclust_tree.pdf
+  ExtendedData_Fig1b_HSPC_reference_comparison_pseudobulk_hclust_tree.png
+```
+
+---
+
+## Expected runtime
+
+The HSPC reference comparison demo analysis was tested on a Windows 11 laptop.
+
+The demo analysis takes approximately:
+
+```text
+1-5 minutes
+```
+
+Runtime may vary depending on the computer and whether the required R packages have already been installed.
+
+---
+
+## Software requirements
+
+The workflow was developed and tested in R.
+
+Tested environment:
+
+```text
+R version 4.5.1
+Platform: x86_64-w64-mingw32/x64
+Operating system: Windows 11 x64
+```
+
+Main R packages directly used in the HSPC reference comparison script:
+
+```text
+Seurat v5.4.0
+SeuratObject v5.3.0
+ggplot2 v4.0.2
+Matrix v1.7-4
+pheatmap v1.0.13
+```
+
+The script will attempt to install missing CRAN packages automatically.
+
+After running the script, complete R session information, including package dependencies, is saved to:
+
+```text
+results/HSPC_reference_comparison_SFig1_a_b_demo/sessionInfo.txt
+```
+
+---
+
+## Original full analysis script
+
+The original full HSPC reference comparison analysis script is provided at:
+
+```text
+code/HSPC_reference_comparison/HSPC_reference_comparison_SFig1_a_b/original/
+  HSPC_reference_comparison_ExtendedData_Fig1ab_full_original_analysis_github.R
+```
+
+This script is intended for reproducing the full HSPC reference comparison analysis using the complete Seurat objects.
+
+The original analysis script requires the following full input files:
+
+```text
+HSPC_waves.txt
+GSE253355_Normal_Bone_Marrow_Atlas_Seurat_SB_v2.rds
+GSE162950_seurat_object.rds
+Tera_integrate_Label.rds
+```
+
+Alternatively, the fetal liver Seurat object can be provided as:
+
+```text
+GSE162950seurat_object.Rdata
+```
+
+These full input files are not included in this repository due to file size limitations.
+
+Before running the original script, users should modify the following paths according to their local environment:
+
+```r
+input_dir <- "path/to/HSPC_reference_comparison_input"
+
+result_dir <- "path/to/output/HSPC_reference_comparison_ExtendedData_Fig1ab"
+```
+
+The original script performs the same analysis workflow as the demo script but uses the complete HSPC reference comparison dataset.
+
+---
+
+## Notes on reproducibility
+
+The HSPC reference comparison demo analysis is designed to verify that the code can be executed and that the expected output structure is generated.
+
+Because the demo dataset is a reduced subset of the full dataset:
+
+- HSPC wave gene expression patterns may be similar but not identical to the manuscript figure.
+- Pseudo-bulk hierarchical clustering may differ from the full analysis.
+- The demo output is intended to demonstrate workflow execution and file structure rather than reproduce the exact final manuscript figure.
+
+This behavior is expected and does not indicate an error in the workflow.
+
+---
+
 ## TCR-seq analysis for Extended Data Fig. 3
 
 ### Overview
@@ -676,6 +955,7 @@ Adult_thy
 DMSO-T
 Inhibitor-T
 ```
+
 The sheets PBMC Collated 2 filtered, LD-SC40 Revision, Fetal_w13_FCAImm, Fetal_w14_FCAImm, Fetal_thy_w17, Postnatal_thy_10m, Postnatal_30m_T06 and Adult_thy contain published reference TCR datasets used as in vivo-differentiated reference populations, including primary human thymocytes and PBMC CD8SP T cells. The primary thymocyte references were derived from Park et al. (Science, 2020), and the PBMC CD8SP T-cell reference was derived from Park et al. (Communications Biology, 2023).
 
 The sheets DMSO-T and Inhibitor-T contain the TCR-seq data generated in this study. DMSO-T corresponds to DMSO-treated hPSC-derived CD8 T cells, and Inhibitor-T corresponds to GSK761-treated hPSC-derived CD8 T cells.
@@ -692,7 +972,7 @@ The TCR-seq demo script performs the following analyses:
 
 1. Read the reduced TCR clone workbook
 2. Assign sample subsets and cell-type labels
-3. Remove records with missing paired CDR3α or CDR3β information
+3. Remove records with missing paired CDR3-alpha or CDR3-beta information
 4. Clean and standardize TCR V and J gene fragment names
 5. Calculate CDR3 amino-acid and nucleotide lengths for downstream repertoire summaries
 6. Calculate TCR diversity metrics, including Shannon entropy and Simpson diversity
@@ -897,34 +1177,19 @@ demo_data/bulkRNAseq_Fig1_demo/
 
 ---
 
-## bulk_TCR_seq analysis for Fig. 1
+## scRNA_seq analysis for SFig. 2
 
 To be added.
 
 Planned contents:
 
 ```text
-code/bulk_TCR_seq/Fig1/original/
-code/bulk_TCR_seq/Fig1/demo/
-demo_data/bulk_TCR_seq_Fig1_demo/
+code/scRNA_seq/SFig. 2/original/
+code/scRNA_seq/SFig. 2/demo/
+demo_data/scRNA_seq_SFig. 2_demo/
 ```
 
 ---
-
-## scRNA-seq analysis for SFig. 2
-
-To be added.
-
-Planned contents:
-
-```text
-code/scRNAseq/SFig1/original/
-code/scRNAseq/SFig1/demo/
-demo_data/scRNAseq_demo_SFig1/
-```
-
----
-
 
 # License
 

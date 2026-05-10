@@ -31,3 +31,7 @@ rawdata_analysis/
 
 # Keep small demo bigWig files
 !demo_data/ATACseq_Fig4_SFig4_SFig5_demo/IGVgene_demo/bigwig_demo/*_demo.bw
+
+# Keep small HSPC reference comparison demo Seurat objects
+!demo_data/HSPC_reference_comparison_SFig1_a_b_demo/*.rds
+!demo_data/HSPC_reference_comparison_SFig1_a_b_demo/*.RDS
